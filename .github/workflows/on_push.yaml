@@ -41,4 +41,5 @@ jobs:
           TAG: ${{ github.ref }}
           IMAGE: ${{ matrix.image }}
         shell: bash
+        working-directory: ${{ matrix.image }}
         run: VERSION=${TAG##*/} make publish
