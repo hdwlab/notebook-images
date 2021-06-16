@@ -23,3 +23,7 @@ build:	## Build an image
 .PHONY: publish
 publish:    ## Publish an image
 	docker push $(IMAGE_PREFIX)/$(IMAGE_NAME):$(VERSION)
+
+.PHONY: run
+run:    ## Run an image
+	docker run -it --rm -p 8888:8888 $(IMAGE_PREFIX)/$(IMAGE_NAME):$(VERSION)
