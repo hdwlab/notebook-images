@@ -33,7 +33,8 @@ RUN projector --accept-license ide autoinstall \
   --config-name PyCharm \
   --ide-name "PyCharm Community Edition 2021.1.2" \
   --port 8888 \
-  --hostname 0.0.0.0
+  --hostname 0.0.0.0 \
+  && chown -R ${NB_USER}:users /home/${NB_USER}
 
 # s6 - copy scripts
 COPY --chown=jovyan:users s6/ /etc
