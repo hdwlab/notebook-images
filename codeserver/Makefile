@@ -5,8 +5,8 @@
 VERSION ?= $(shell ../utils/get-version.sh)
 COMMIT_ID := $(shell git rev-parse HEAD)
 
-IMAGE_PREFIX := ghcr.io/takedalab
-IMAGE_NAME := $(shell basename ${PWD})
+IMAGE_PREFIX ?= ghcr.io/takedalab
+IMAGE_NAME ?= $(shell basename ${PWD})
 $(warning Image: $(IMAGE_PREFIX)/$(IMAGE_NAME):$(VERSION))
 
 help: ## Show this help
