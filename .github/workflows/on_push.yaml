@@ -17,6 +17,7 @@ jobs:
       matrix:
         image:
           - codeserver
+          - pycharm
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
