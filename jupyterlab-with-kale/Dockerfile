@@ -1,4 +1,5 @@
-FROM public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-scipy:v1.3.0
+ARG BASE_IMAGE="public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-scipy:v1.3.0"
+FROM ${BASE_IMAGE}
 
 # Install common packages
 USER root
