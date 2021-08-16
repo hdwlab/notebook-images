@@ -18,6 +18,9 @@ RUN pip install kubeflow-kale==0.7.0 \
 RUN conda install xeus-python ptvsd \
   && jupyter labextension install @jupyterlab/debugger
 
+# Install jupyter-git
+RUN jupyter labextension install @jupyterlab/git
+
 # Fix Kale
 COPY ./patchfile /opt/patchfile
 RUN cd /opt/conda/lib/python3.8/site-packages/kale && patch -p3 < /opt/patchfile
