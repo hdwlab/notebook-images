@@ -6,6 +6,7 @@ on:
       - main
       - master
       - develop
+      - feature/jupyterlab
     tags:
       - v*
 
@@ -18,7 +19,6 @@ jobs:
         image:
           - codeserver
           - pycharm
-          - jupyter-scipy-with-kale
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
@@ -45,3 +45,39 @@ jobs:
         shell: bash
         working-directory: ${{ matrix.image }}
         run: VERSION=${TAG##*/} make publish
+
+  build-jupyterlab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      matrix:
+        base_name:
+          - scipy
+          - pytorch
+          - tensorflow
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        env:
+          TAG: ${{ github.ref }}
+          BASE_NAME: ${{ matrix.base_name }}
+        shell: bash
+        working-directory: jupyterlab-with-kale
+        run: VERSION=${TAG##*/} make build.${BASE_NAME}
+
+      - name: Push to GitHab registry
+        env:
+          TAG: ${{ github.ref }}
+          BASE_NAME: ${{ matrix.base_name }}
+        shell: bash
+        working-directory: jupyterlab-with-kale
+        run: VERSION=${TAG##*/} make publish.${BASE_NAME}
