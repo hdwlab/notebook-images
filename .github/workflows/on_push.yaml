@@ -18,6 +18,7 @@ jobs:
         image:
           - codeserver
           - pycharm
+          - katib-kfp-trial
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
