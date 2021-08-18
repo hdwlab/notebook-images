@@ -10,6 +10,6 @@ RUN apt update -y \
 USER ${NB_UID}
 
 # Fix Kale
-RUN pip install --upgrade kubeflow-kale==0.7.0
+RUN pip install --upgrade kubeflow-kale==0.7.0 kfp==1.7.1 kfp-server-api==1.6.0 kfp-pipeline-spec==0.1.9
 COPY ./patchfile /opt/patchfile
 RUN cd /usr/local/lib/python3.6/site-packages/kale && patch -p3 < /opt/patchfile

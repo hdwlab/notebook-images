@@ -5,7 +5,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/backend/kale/common/katibutils.py b/backend/kale/common/katibutils.py
 --- a/backend/kale/common/katibutils.py	(revision d90310dbebc765c68915df0cf832a7a5d1ec1551)
-+++ b/backend/kale/common/katibutils.py	(date 1629254101702)
++++ b/backend/kale/common/katibutils.py	(date 1629275175820)
 @@ -41,7 +41,7 @@
  KALE_KATIB_KFP_ANNOTATION_KEY = "kubeflow-kale.org/kfp-run-uuid"
 
@@ -15,6 +15,104 @@ diff --git a/backend/kale/common/katibutils.py b/backend/kale/common/katibutils.
  TRIAL_SA = "pipeline-runner"
  TRIAL_CONTAINER_NAME = "main"
  KALE_PARAM_TRIAL_NAME = "kaleParamTrialName"
+@@ -62,12 +62,40 @@
+                    "template": {
+                        "metadata": {
+                            "annotations": {"sidecar.istio.io/inject": "false"},
+-                           "labels": {"access-ml-pipeline": "true"},
++                           "labels": {
++                               "k8s-slurm-injector/injection": "disabled",
++                               "access-ml-pipeline": "true"
++                           },
+                        },
+                        "spec": {"restartPolicy": "Never",
+                                 "serviceAccountName": TRIAL_SA,
+-                                "containers": [{"name": TRIAL_CONTAINER_NAME,
+-                                                "image": TRIAL_IMAGE}]}
++                                "containers": [{
++                                    "name": TRIAL_CONTAINER_NAME,
++                                    "image": TRIAL_IMAGE,
++                                    "env": [{
++                                        "name": "ML_PIPELINE_SA_TOKEN_PATH",
++                                        "value": "/var/run/secrets/ml-pipeline/token"
++                                    }],
++                                    "volumeMounts": [{
++                                        "mountPath": "/var/run/secrets/ml-pipeline",
++                                        "name": "volume-ml-pipeline-token"
++                                    }],
++                                }],
++                                "volumes": [{
++                                    "name": "volume-ml-pipeline-token",
++                                    "projected": {
++                                        "sources": [
++                                            {
++                                                "serviceAccountToken": {
++                                                    "audience": "pipelines.kubeflow.org",
++                                                    "expirationSeconds": 7200,
++                                                    "path": "token"
++                                                }
++                                            }
++                                        ]
++                                    }
++                                }]
++                                },
+                    }}}
+
+ RAW_TEMPLATE_V1ALPHA3 = """\
+@@ -84,12 +112,18 @@
+         sidecar.istio.io/inject: "false"
+       labels:
+         access-ml-pipeline: "true"
++        k8s-slurm-injector/namespace: {{.NameSpace}}
+     spec:
+       restartPolicy: Never
+       serviceAccountName: pipeline-runner
+       containers:
+         - name: {{.Trial}}
+           image: {image}
++          env:
++            - name: ML_PIPELINE_SA_TOKEN_PATH
++              value: /var/run/secrets/kubeflow/pipelines/token
++            - name: KF_PIPELINES_SA_TOKEN_PATH
++              value: /var/run/secrets/kubeflow/pipelines/token
+           command:
+             - python3 -u -c "from kale.common.katibutils\
+                 import create_and_wait_kfp_run;\
+@@ -103,6 +137,18 @@
+                         {{.Name}}='{{.Value}}',\
+                     {{- end }} {{- end }}\
+                 )"
++          volumeMounts:
++            - mountPath: /var/run/secrets/kubeflow/pipelines/token
++              name: volume-ml-pipeline-token
++              readOnly: true
++      volumes:
++        - name: volume-ml-pipeline-token
++          projected:
++            sources:
++              - serviceAccountToken:
++                  path: token
++                  expirationSeconds: 7200
++                  audience: pipelines.kubeflow.org
+ """
+
+
+@@ -149,6 +195,7 @@
+                                 pipeline_id=pipeline_id,
+                                 version_id=version_id,
+                                 run_name=run_name,
++                                namespace=pod_namespace,
+                                 **kwargs)
+     run_id = run.id
+
+@@ -306,6 +353,7 @@
+                    "api_version": KATIB_API_VERSION_V1BETA1})
+     cmd = JOB_CMD % ", ".join("%s='%s'" % (k, v) for k, v in kwargs.items())
+     job = _get_base_job_cr()
++    job["spec"]["template"]["metadata"]["labels"]["k8s-slurm-injector/namespace"] = podutils.get_namespace()
+     job["spec"]["template"]["spec"]["containers"][0]["command"] = [cmd]
+     trial_tmpl["trialSpec"] = job
+     spec["trialTemplate"] = trial_tmpl
 Index: backend/kale/rpc/kfp.py
 IDEA additional info:
 Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
@@ -39,7 +137,7 @@ Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
 ===================================================================
 diff --git a/backend/kale/common/kfputils.py b/backend/kale/common/kfputils.py
 --- a/backend/kale/common/kfputils.py	(revision d90310dbebc765c68915df0cf832a7a5d1ec1551)
-+++ b/backend/kale/common/kfputils.py	(date 1629093434559)
++++ b/backend/kale/common/kfputils.py	(date 1629260401371)
 @@ -44,8 +44,22 @@
  log = logging.getLogger(__name__)
 
@@ -65,3 +163,26 @@ diff --git a/backend/kale/common/kfputils.py b/backend/kale/common/kfputils.py
 
 
  def get_pipeline_id(pipeline_name: str, host: str = None) -> str:
+@@ -159,7 +173,7 @@
+
+
+ def run_pipeline(experiment_name: str, pipeline_id: str, run_name: str = None,
+-                 version_id: str = None, host: str = None, **kwargs) -> Any:
++                 version_id: str = None, host: str = None, namespace: str = None, **kwargs) -> Any:
+     """Run pipeline (without uploading) in kfp.
+
+     Args:
+@@ -168,11 +182,12 @@
+         pipeline_id: The ID of the uploaded pipeline to be run
+         version_id: the ID of the pipeline to be run
+         host: custom host when executing outside of the cluster
++        namespace: namespace
+
+     Returns:
+         Pipeline run metadata
+     """
+-    client = _get_kfp_client(host)
++    client = _get_kfp_client(host, namespace=namespace)
+     log.info("Creating KFP experiment '%s'...", experiment_name)
+     experiment = client.create_experiment(experiment_name)
+     pipeline = client.pipelines.get_pipeline(pipeline_id)

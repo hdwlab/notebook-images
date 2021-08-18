@@ -54,7 +54,9 @@ jobs:
         base_name:
           - scipy
           - pytorch
+          - pytorch-gpu
           - tensorflow
+          - tensorflow-gpu
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
@@ -90,7 +92,9 @@ jobs:
         base_name:
           - scipy
           - pytorch
+          - pytorch-gpu
           - tensorflow
+          - tensorflow-gpu
     steps:
       - name: Clone repo
         uses: actions/checkout@v2

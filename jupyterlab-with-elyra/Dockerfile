@@ -19,6 +19,13 @@ RUN python3 -m pip install -r /tmp/requirements.txt --quiet --no-cache-dir --use
 # install elyra
 RUN python3 -m pip install --quiet --no-cache-dir --use-deprecated=legacy-resolver elyra==3.0.0
 
+# Update kfp
+RUN python3 -m pip install --upgrade --no-cache-dir kfp>=1.7.1
+
+# Fix elyra
+COPY ./patchfile /opt/patchfile
+RUN cd /opt/conda/lib/python3.8/site-packages/elyra && patch -p2 < /opt/patchfile
+
 RUN jupyter lab build
 
 USER ${NB_UID}

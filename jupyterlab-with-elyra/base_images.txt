@@ -1,3 +1,5 @@
 scipy public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-scipy:v1.3.1-rc.0
-pytorch public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-pytorch-cuda-full:v1.3.1-rc.0
-tensorflow public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-tensorflow-cuda-full:v1.3.1-rc.0
+pytorch public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-pytorch-full:v1.3.1-rc.0
+pytorch-gpu public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-pytorch-cuda-full:v1.3.1-rc.0
+tensorflow public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-tensorflow-full:v1.3.1-rc.0
+tensorflow-gpu public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-tensorflow-cuda-full:v1.3.1-rc.0
