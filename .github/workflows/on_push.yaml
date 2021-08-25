@@ -19,6 +19,7 @@ jobs:
           - codeserver
           - pycharm
           - katib-kfp-trial
+          - jupyterlab-with-autoware
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
