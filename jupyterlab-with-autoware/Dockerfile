@@ -43,6 +43,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     vim \
     wget \
     zip \
+    zstd \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
