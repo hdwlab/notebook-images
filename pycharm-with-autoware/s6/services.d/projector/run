@@ -1,0 +1,3 @@
+#!/usr/bin/with-contenv bash
+source /home/autoware/Autoware/install/setup.bash
+projector run
