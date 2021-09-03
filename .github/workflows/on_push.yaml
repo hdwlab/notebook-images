@@ -18,7 +18,7 @@ jobs:
         image:
           - codeserver
           - pycharm
-          - pycharm-with-autoware
+          - pycharm-with-ros
           - katib-kfp-trial
           - jupyterlab-with-autoware
     steps:

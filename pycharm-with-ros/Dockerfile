@@ -1,14 +1,6 @@
-FROM autoware/autoware:1.14.0-melodic-cuda
+FROM ros:noetic
 
 USER root
-
-# install CUDA-related packages
-RUN wget -O libcudnn.deb https://www.dropbox.com/s/4edln301yea6trp/libcudnn7_7.6.5.32-1%2Bcuda10.0_amd64.deb?dl=0 \
-    && wget -O libcudnn-dev.deb \
-        https://www.dropbox.com/s/3fjsculy5ifl4sn/libcudnn7-dev_7.6.5.32-1%2Bcuda10.0_amd64.deb?dl=0 \
-    && dpkg -i libcudnn.deb \
-    && dpkg -i libcudnn-dev.deb \
-    && rm libcudnn.deb libcudnn-dev.deb
 
 # common environemnt variables
 ENV NB_USER jovyan
@@ -28,7 +20,11 @@ ARG S6_VERSION=v2.2.0.3
 SHELL ["/bin/bash", "-c"]
 
 # update GPG-key
-RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+RUN apt-get update \
+ && apt-get install --no-install-recommends curl \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/* \
+ && curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
 
 # install - usefull linux packages
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -70,8 +66,7 @@ RUN curl -sL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_A
  && chmod +x /usr/local/bin/kubectl
 
 # create user and set required ownership
-#RUN useradd -M -s /bin/bash -N -u ${NB_UID} ${NB_USER} \
-RUN usermod -l ${NB_USER} autoware \
+RUN useradd -M -s /bin/bash -N -u ${NB_UID} ${NB_USER} \
  && mkdir -p ${HOME} \
  && chown -R ${NB_USER}:users ${HOME} \
  && chown -R ${NB_USER}:users /usr/local/bin \
