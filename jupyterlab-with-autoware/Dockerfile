@@ -1,4 +1,4 @@
-FROM autoware/autoware:1.14.0-melodic
+FROM autoware/autoware:1.14.0-melodic-cuda
 
 USER root
 
