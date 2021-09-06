@@ -18,6 +18,7 @@ jobs:
         image:
           - codeserver
           - pycharm
+          - pycharm-cuda
           - pycharm-with-ros
           - katib-kfp-trial
           - jupyterlab-with-autoware
