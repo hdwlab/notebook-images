@@ -57,6 +57,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 
 # install - additional ROS packages
 RUN export DEBIAN_FRONTEND=noninteractive \
+ && apt-get -yq update \
  && apt-get -yq install --no-install-recommends \
     ros-melodic-camera-calibration \
     ros-melodic-image-proc \
