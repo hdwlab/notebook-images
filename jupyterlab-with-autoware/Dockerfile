@@ -55,6 +55,16 @@ RUN export DEBIAN_FRONTEND=noninteractive \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
+# install - additional ROS packages
+RUN export DEBIAN_FRONTEND=noninteractive \
+ && apt-get -yq update \
+ && apt-get -yq install --no-install-recommends \
+    ros-melodic-camera-calibration \
+    ros-melodic-image-proc \
+    ros-melodic-image-transport \
+ && apt-get clean \
+ && rm -rf /var/lib/apt/lists/*
+
 # install - s6 overlay
 RUN export GNUPGHOME=/tmp/ \
  && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer" -o /tmp/s6-overlay-${S6_VERSION}-installer \
