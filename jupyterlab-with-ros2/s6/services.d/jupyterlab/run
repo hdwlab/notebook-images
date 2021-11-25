@@ -1,0 +1,26 @@
+#!/usr/bin/with-contenv bash
+cd "${HOME}"
+
+# unsetting ROS_DISTRO to silence ROS_DISTRO override warning
+unset ROS_DISTRO
+# setup ros1 environment
+source "/opt/ros/${ROS1_DISTRO}/setup.bash"
+
+# unsetting ROS_DISTRO to silence ROS_DISTRO override warning
+unset ROS_DISTRO
+# setup ros2 environment
+source "/opt/ros/${ROS2_DISTRO}/setup.bash"
+
+export PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages:$PYTHONPATH
+
+exec /opt/conda/bin/jupyter lab \
+  --notebook-dir="${HOME}" \
+  --ip=0.0.0.0 \
+  --no-browser \
+  --allow-root \
+  --port=8888 \
+  --ServerApp.token="" \
+  --ServerApp.password="" \
+  --ServerApp.allow_origin="*" \
+  --ServerApp.base_url="${NB_PREFIX}" \
+  --ServerApp.authenticate_prometheus=False
