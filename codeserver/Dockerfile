@@ -9,5 +9,7 @@ RUN apt update -y \
     nodejs \
     npm \
     yarn \
+    libgl1 \
+    libgomp1 \
   && rm -rf /var/lib/apt/lists/*
 USER ${NB_UID}

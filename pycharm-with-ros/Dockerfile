@@ -48,6 +48,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     wget \
     zip \
     zstd \
+    libgl1 \
+    libgomp1 \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 

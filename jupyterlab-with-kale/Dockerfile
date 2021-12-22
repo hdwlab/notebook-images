@@ -6,6 +6,8 @@ USER root
 RUN apt update -y \
   && apt upgrade -y \
   && apt install -y \
+    libgl1 \
+    libgomp1 \
     patch \
   && rm -rf /var/lib/apt/lists/*
 USER ${NB_UID}
