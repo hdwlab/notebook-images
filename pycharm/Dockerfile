@@ -16,6 +16,8 @@ RUN apt update -y \
     libxtst6 \
     libfreetype6 \
     libxi6 \
+    libgl1 \
+    libgomp1 \
   && rm -rf /var/lib/apt/lists/*
 
 # Install poetry
