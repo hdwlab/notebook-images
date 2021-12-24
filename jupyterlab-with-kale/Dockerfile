@@ -1,5 +1,5 @@
 ARG BASE_IMAGE="public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-scipy:v1.3.0"
-FROM ${BASE_IMAGE}
+FROM ${BASE_IMAGE} as base
 
 # Install common packages
 USER root
@@ -27,3 +27,10 @@ RUN cd /opt/conda/lib/python3.8/site-packages/kale && patch -p3 < /opt/patchfile
 
 # s6 - copy scripts
 COPY --chown=jovyan:users s6/ /etc
+
+
+#
+# For root user mode
+#
+FROM base as root
+USER root

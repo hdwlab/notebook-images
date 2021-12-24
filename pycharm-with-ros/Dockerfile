@@ -1,4 +1,4 @@
-FROM ros:noetic
+FROM ros:noetic as base
 
 USER root
 
@@ -126,3 +126,10 @@ USER $NB_USER
 EXPOSE 8888
 
 ENTRYPOINT ["/init"]
+
+
+#
+# For root user mode
+#
+FROM base as root
+USER root

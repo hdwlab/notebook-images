@@ -1,4 +1,4 @@
-FROM public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/base:master-6c41e72b
+FROM public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/base:master-6c41e72b as base
 
 USER root
 RUN apt update -y \
@@ -51,3 +51,10 @@ USER $NB_UID
 EXPOSE 8888
 
 ENTRYPOINT ["/init"]
+
+
+#
+# For root user mode
+#
+FROM base as root
+USER root

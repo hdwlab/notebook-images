@@ -1,5 +1,5 @@
 ARG BASE_IMAGE="public.ecr.aws/j1r0q0g6/notebooks/notebook-servers/jupyter-scipy:v1.3.0"
-FROM ${BASE_IMAGE}
+FROM ${BASE_IMAGE} as base
 
 # Install common packages
 USER root
@@ -31,3 +31,10 @@ RUN cd /opt/conda/lib/python3.8/site-packages/elyra && patch -p2 < /opt/patchfil
 RUN jupyter lab build
 
 USER ${NB_UID}
+
+
+#
+# For root user mode
+#
+FROM base as root
+USER root

@@ -20,4 +20,18 @@ target_base=$(cat ${base_image_list_file} | awk -v TARGET=${target_base_name} '(
 
 # Build
 set -x
-DOCKER_BUILDKIT=1 docker build -t ${target_image_name} --cache-from ${target_image_name} --build-arg BASE_IMAGE=${target_base} .
+if ${DEFAULT_ROOT_USER:-false}; then
+  DOCKER_BUILDKIT=1 docker build \
+    -t ${target_image_name} \
+    --cache-from ${target_image_name} \
+    --build-arg BASE_IMAGE=${target_base} \
+    --target root \
+    .
+else
+  DOCKER_BUILDKIT=1 docker build \
+  -t ${target_image_name} \
+  --cache-from ${target_image_name} \
+  --build-arg BASE_IMAGE=${target_base} \
+  --target base \
+  .
+fi
