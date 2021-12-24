@@ -25,15 +25,19 @@ default: help
 BUILD_ALL_IMAGES := $(addprefix build.,$(BUILD_LIST))
 build: $(BUILD_ALL_IMAGES)	## Builds all images.
 build.%:
-	./builder.sh ${BUILD_BASE_IMAGES_FILE} $* $(IMAGE_PREFIX)/$(IMAGE_NAME):$(VERSION)-$*
+	./builder.sh ${BUILD_BASE_IMAGES_FILE} $* $(IMAGE_PREFIX)/$(IMAGE_NAME):$(VERSION)-$*$(IMAGE_TAG_POSTFIX)
 
 .PHONY: publish
 .PHONY: publish.%
 PUBLISH_ALL_IMAGES := $(addprefix publish.,$(BUILD_LIST))
-publish: $(PUBLISH_ALL_IMAGES)	## Builds all images.
+publish: $(PUBLISH_ALL_IMAGES)	## Publishes all images.
 publish.%:
-	docker push $(IMAGE_PREFIX)/$(IMAGE_NAME):$(VERSION)-$*
+	docker push $(IMAGE_PREFIX)/$(IMAGE_NAME):$(VERSION)-$*$(IMAGE_TAG_POSTFIX)
 
 .PHONY: run.%
-run.%:  ### Run an image
-	docker run -it --rm -p 8888:8888 $(IMAGE_PREFIX)/$(IMAGE_NAME):$(VERSION)-$*
+run.%:	## Run an image
+	docker run -it --rm -p 8888:8888 $(IMAGE_PREFIX)/$(IMAGE_NAME):$(VERSION)-$*$(IMAGE_TAG_POSTFIX)
+
+.PHONY: root.%
+root.%:	## Enable root-user
+	export DEFAULT_ROOT_USER=true && export IMAGE_TAG_POSTFIX=-root && make $*

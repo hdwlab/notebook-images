@@ -15,6 +15,9 @@ jobs:
     timeout-minutes: 300
     strategy:
       matrix:
+        command_prefix:
+          - ""
+          - root.
         image:
           - codeserver
           - pycharm
@@ -38,23 +41,28 @@ jobs:
         env:
           TAG: ${{ github.ref }}
           IMAGE: ${{ matrix.image }}
+          COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
         working-directory: ${{ matrix.image }}
-        run: VERSION=${TAG##*/} make build
+        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}build
 
       - name: Push to GitHab registry
         env:
           TAG: ${{ github.ref }}
           IMAGE: ${{ matrix.image }}
+          COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
         working-directory: ${{ matrix.image }}
-        run: VERSION=${TAG##*/} make publish
+        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}publish
 
   build-jupyterlab-with-kale:
     runs-on: ubuntu-latest
     timeout-minutes: 300
     strategy:
       matrix:
+        command_prefix:
+          - ""
+          - root.
         base_name:
           - scipy
           - pytorch
@@ -76,23 +84,28 @@ jobs:
         env:
           TAG: ${{ github.ref }}
           BASE_NAME: ${{ matrix.base_name }}
+          COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
         working-directory: jupyterlab-with-kale
-        run: VERSION=${TAG##*/} make build.${BASE_NAME}
+        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}build.${BASE_NAME}
 
       - name: Push to GitHab registry
         env:
           TAG: ${{ github.ref }}
           BASE_NAME: ${{ matrix.base_name }}
+          COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
         working-directory: jupyterlab-with-kale
-        run: VERSION=${TAG##*/} make publish.${BASE_NAME}
+        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}publish.${BASE_NAME}
 
   build-jupyterlab-with-elyra:
     runs-on: ubuntu-latest
     timeout-minutes: 300
     strategy:
       matrix:
+        command_prefix:
+          - ""
+          - root.
         base_name:
           - scipy
           - pytorch
@@ -114,14 +127,16 @@ jobs:
         env:
           TAG: ${{ github.ref }}
           BASE_NAME: ${{ matrix.base_name }}
+          COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
         working-directory: jupyterlab-with-elyra
-        run: VERSION=${TAG##*/} make build.${BASE_NAME}
+        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}build.${BASE_NAME}
 
       - name: Push to GitHab registry
         env:
           TAG: ${{ github.ref }}
           BASE_NAME: ${{ matrix.base_name }}
+          COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
         working-directory: jupyterlab-with-elyra
-        run: VERSION=${TAG##*/} make publish.${BASE_NAME}
+        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}publish.${BASE_NAME}
