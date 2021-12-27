@@ -108,7 +108,7 @@ RUN python3 -m pip install projector-installer
 RUN mkdir -p /home/${NB_USER}/.projector/configs
 RUN projector --accept-license ide autoinstall \
   --config-name PyCharm \
-  --ide-name "PyCharm Community Edition 2021.1.2" \
+  --ide-name "PyCharm Community Edition 2021.3" \
   --port 8888 \
   --hostname 0.0.0.0 \
   && chown -R ${NB_USER}:users /home/${NB_USER}
@@ -133,3 +133,5 @@ ENTRYPOINT ["/init"]
 #
 FROM base as root
 USER root
+
+RUN rm -r /root && ln -s /home/jovyan /root
