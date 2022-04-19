@@ -44,7 +44,7 @@ jobs:
           IMAGE: ${{ matrix.image }}
           COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
-        working-directory: ${{ matrix.image }}
+        working-directory: legacy/${{ matrix.image }}
         run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}build
 
       - name: Push to GitHab registry
@@ -53,7 +53,7 @@ jobs:
           IMAGE: ${{ matrix.image }}
           COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
-        working-directory: ${{ matrix.image }}
+        working-directory: legacy/${{ matrix.image }}
         run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}publish
 
   build-jupyterlab-with-kale:
@@ -88,7 +88,7 @@ jobs:
           BASE_NAME: ${{ matrix.base_name }}
           COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
-        working-directory: jupyterlab-with-kale
+        working-directory: legacy/jupyterlab-with-kale
         run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}build.${BASE_NAME}
 
       - name: Push to GitHab registry
@@ -97,7 +97,7 @@ jobs:
           BASE_NAME: ${{ matrix.base_name }}
           COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
-        working-directory: jupyterlab-with-kale
+        working-directory: legacy/jupyterlab-with-kale
         run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}publish.${BASE_NAME}
 
   build-jupyterlab-with-elyra:
@@ -132,7 +132,7 @@ jobs:
           BASE_NAME: ${{ matrix.base_name }}
           COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
-        working-directory: jupyterlab-with-elyra
+        working-directory: legacy/jupyterlab-with-elyra
         run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}build.${BASE_NAME}
 
       - name: Push to GitHab registry
@@ -141,5 +141,5 @@ jobs:
           BASE_NAME: ${{ matrix.base_name }}
           COMMAND_PREFIX: ${{ matrix.command_prefix }}
         shell: bash
-        working-directory: jupyterlab-with-elyra
+        working-directory: legacy/jupyterlab-with-elyra
         run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}publish.${BASE_NAME}
