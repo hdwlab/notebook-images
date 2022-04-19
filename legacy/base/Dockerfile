@@ -1,23 +1,26 @@
-#syntax=docker/dockerfile:1.4
+FROM ubuntu:20.04
 
-FROM base_image as devel
-SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-
-# Common environemnt variables
+# common environemnt variables
 ENV NB_USER jovyan
 ENV NB_UID 1000
 ENV NB_PREFIX /
 ENV HOME /home/$NB_USER
 ENV SHELL /bin/bash
 
-# Args - software versions
+# args - software versions
+ARG KUBECTL_ARCH="amd64"
+ARG KUBECTL_VERSION=v1.21.0
 ARG S6_ARCH="amd64"
+ # renovate: datasource=github-tags depName=just-containers/s6-overlay versioning=loose
 ARG S6_VERSION=v2.2.0.3
 
-# Install useful linux packages
+# set shell to bash
+SHELL ["/bin/bash", "-c"]
+
+# install - usefull linux packages
 RUN export DEBIAN_FRONTEND=noninteractive \
- && apt -yq update \
- && apt -yq install --no-install-recommends \
+ && apt-get -yq update \
+ && apt-get -yq install --no-install-recommends \
     apt-transport-https \
     bash \
     bzip2 \
@@ -26,36 +29,19 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     git \
     gnupg \
     gnupg2 \
-    gosu \
     locales \
     lsb-release \
     nano \
     software-properties-common \
-    ssh \
     tzdata \
     unzip \
     vim \
     wget \
     zip \
- && apt clean \
+ && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-# Install Ansible
-RUN add-apt-repository --yes --update ppa:ansible/ansible \
-  && apt update \
-  && DEBIAN_FRONTEND=noninteractive apt -yq install --no-install-recommends \
-    ansible \
-  && apt clean \
-  && rm -rf /var/lib/apt/lists/*
-
-# Set locale configs
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
- && locale-gen
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
-
-# Install s6 overlay
+# install - s6 overlay
 RUN export GNUPGHOME=/tmp/ \
  && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer" -o /tmp/s6-overlay-${S6_VERSION}-installer \
  && curl -sL "https://github.com/just-containers/s6-overlay/releases/download/${S6_VERSION}/s6-overlay-${S6_ARCH}-installer.sig" -o /tmp/s6-overlay-${S6_VERSION}-installer.sig \
@@ -65,28 +51,25 @@ RUN export GNUPGHOME=/tmp/ \
  && /tmp/s6-overlay-${S6_VERSION}-installer / \
  && rm /tmp/s6-overlay-${S6_VERSION}-installer.sig /tmp/s6-overlay-${S6_VERSION}-installer
 
-# Create user and set required ownership
+# install - kubectl
+RUN curl -sL "https://dl.k8s.io/release/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl" -o /usr/local/bin/kubectl \
+ && curl -sL "https://dl.k8s.io/${KUBECTL_VERSION}/bin/linux/${KUBECTL_ARCH}/kubectl.sha256" -o /tmp/kubectl.sha256 \
+ && echo "$(cat /tmp/kubectl.sha256) /usr/local/bin/kubectl" | sha256sum --check \
+ && rm /tmp/kubectl.sha256 \
+ && chmod +x /usr/local/bin/kubectl
+
+# create user and set required ownership
 RUN useradd -M -s /bin/bash -N -u ${NB_UID} ${NB_USER} \
  && mkdir -p ${HOME} \
  && chown -R ${NB_USER}:users ${HOME} \
  && chown -R ${NB_USER}:users /usr/local/bin \
  && chown -R ${NB_USER}:users /etc/s6
 
-# Add GitHub to known hosts for private repositories
-RUN mkdir -p ${HOME}/.ssh \
-  && ssh-keyscan github.com >> ${HOME}/.ssh/known_hosts
+# set locale configs
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen \
+ && locale-gen
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
-# Copy files
-COPY ansible-galaxy-requirements.yaml /build/
-COPY ansible/ /build/ansible/
-WORKDIR /build
-
-# Run ansible-playbook
-ARG PLAYBOOK=base
-RUN ansible-galaxy collection install -f -r ansible-galaxy-requirements.yaml
-RUN --mount=type=ssh ansible-playbook -v "takedalab.notebook_images.${PLAYBOOK}"
-
-# Set entrypoint
-COPY docker/docker-entrypoint.sh /docker-entrypoint.sh
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["/bin/bash"]
+USER $NB_UID
