@@ -1,0 +1,8 @@
+---
+# tasks file for dev_tools
+- name: Install curl
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+    name:
+      - curl
