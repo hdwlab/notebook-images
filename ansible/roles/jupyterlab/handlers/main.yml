@@ -1,0 +1,27 @@
+---
+- name: Enable service JupyterLab
+  listen: JupyterLab installation is done
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    [[ ! -d /etc/services.d ]] && mkdir -p /etc/services.d
+    mkdir -p /etc/services.d/jupyterlab
+    
+    cat <<'EOF' > /etc/services.d/jupyterlab/run
+    #!/usr/bin/with-contenv bash
+    
+    cd "${HOME}"
+    CONDA_DIR="{{ CONDA_DIR }}"
+    gosu ${NB_USER} exec /opt/conda/bin/jupyter lab \
+      --notebook-dir="${HOME}" \
+      --ip=0.0.0.0 \
+      --no-browser \
+      --allow-root \
+      --port=8888 \
+      --ServerApp.token="" \
+      --ServerApp.password="" \
+      --ServerApp.allow_origin="*" \
+      --ServerApp.base_url="${NB_PREFIX}" \
+      --ServerApp.authenticate_prometheus=False
+    
+    EOF

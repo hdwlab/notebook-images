@@ -3,3 +3,4 @@
   roles:
     - role: takedalab.notebook_images.dev_tools
     - role: takedalab.notebook_images.openssh
+    - role: takedalab.notebook_images.jupyterlab

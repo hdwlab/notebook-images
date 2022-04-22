@@ -72,8 +72,12 @@ WORKDIR /build
 
 # Run ansible-playbook
 ARG PLAYBOOK=base
-RUN ansible-galaxy collection install -f -r ansible-galaxy-requirements.yaml
-RUN --mount=type=ssh ansible-playbook -v "takedalab.notebook_images.${PLAYBOOK}"
+COPY <<EOF /docker-entrypoint-internal.sh
+#!/usr/bin/env bash
+EOF
+RUN chmod 777 /docker-entrypoint-internal.sh \
+  && ansible-galaxy collection install -f -r ansible-galaxy-requirements.yaml
+RUN --mount=type=ssh ansible-playbook -vvv "takedalab.notebook_images.${PLAYBOOK}"
 
 # s6 - 01-copy-tmp-home
 RUN mkdir -p /tmp_home \
@@ -85,6 +89,7 @@ EOF
 WORKDIR ${HOME}
 
 # Set entrypoint
+RUN echo 'exec "$@"' >> /docker-entrypoint-internal.sh
 COPY docker/docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["/bin/bash"]
