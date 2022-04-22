@@ -1,0 +1,74 @@
+---
+- name: Install OpenSSH
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+    name:
+      - openssh-server
+- name: Create directory /run/sshd
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    [[ ! -d /run/sshd ]] && mkdir /run/sshd
+- name: Configure sshd_config
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    [[ -f /etc/ssh/sshd_config ]] && mv /etc/ssh/sshd_config /etc/ssh/sshd_config_original
+    cat <<EOF > /etc/ssh/sshd_config
+    Include /etc/ssh/sshd_config.d/*.conf
+    
+    # Connection
+    Port 22
+    AddressFamily any
+    ListenAddress 0.0.0.0
+    ListenAddress ::
+    
+    # Host key
+    HostKey /etc/ssh/ssh_host_rsa_key
+    HostKey /etc/ssh/ssh_host_ecdsa_key
+    HostKey /etc/ssh/ssh_host_ed25519_key
+
+    # Logging
+    SyslogFacility AUTHPRIV
+    LogLevel INFO
+
+    # Authentication:
+    LoginGraceTime 1m
+    PermitRootLogin no
+    StrictModes yes
+    MaxAuthTries 3
+    MaxSessions 10
+    
+    PubkeyAuthentication yes
+    
+    AuthorizedKeysFile     .ssh/authorized_keys
+    AuthorizedPrincipalsFile none
+    AuthorizedKeysCommand none
+    AuthorizedKeysCommandUser nobody
+    
+    HostbasedAuthentication no
+    IgnoreUserKnownHosts no
+    IgnoreRhosts yes
+    
+    PasswordAuthentication no
+    PermitEmptyPasswords no
+
+    ChallengeResponseAuthentication no
+
+    UsePAM yes
+
+    AllowAgentForwarding yes
+    AllowTcpForwarding yes
+    X11Forwarding yes
+    PrintMotd no
+
+    Banner none
+
+    AcceptEnv LANG LC_*
+
+    Subsystem       sftp    /usr/lib/openssh/sftp-server
+
+    EOF

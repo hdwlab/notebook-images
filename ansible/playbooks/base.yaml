@@ -2,3 +2,4 @@
   connection: local
   roles:
     - role: takedalab.notebook_images.dev_tools
+    - role: takedalab.notebook_images.openssh

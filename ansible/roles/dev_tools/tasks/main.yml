@@ -1,8 +1,18 @@
 ---
-# tasks file for dev_tools
-- name: Install curl
+- name: Install development tools
   become: true
   ansible.builtin.apt:
     update_cache: yes
     name:
+      - bzip2
       - curl
+      - git
+      - nano
+      - openssh-client
+      - tmux
+      - unzip
+      - vim
+      - wget
+      - zip
+  notify:
+    - dev-tools installation is done

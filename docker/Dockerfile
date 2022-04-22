@@ -20,7 +20,6 @@ RUN export DEBIAN_FRONTEND=noninteractive \
  && apt -yq install --no-install-recommends \
     apt-transport-https \
     bash \
-    bzip2 \
     ca-certificates \
     curl \
     git \
@@ -29,14 +28,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     gosu \
     locales \
     lsb-release \
-    nano \
     software-properties-common \
-    ssh \
     tzdata \
-    unzip \
-    vim \
-    wget \
-    zip \
  && apt clean \
  && rm -rf /var/lib/apt/lists/*
 
@@ -72,10 +65,6 @@ RUN useradd -M -s /bin/bash -N -u ${NB_UID} ${NB_USER} \
  && chown -R ${NB_USER}:users /usr/local/bin \
  && chown -R ${NB_USER}:users /etc/s6
 
-# Add GitHub to known hosts for private repositories
-RUN mkdir -p ${HOME}/.ssh \
-  && ssh-keyscan github.com >> ${HOME}/.ssh/known_hosts
-
 # Copy files
 COPY ansible-galaxy-requirements.yaml /build/
 COPY ansible/ /build/ansible/
@@ -85,6 +74,15 @@ WORKDIR /build
 ARG PLAYBOOK=base
 RUN ansible-galaxy collection install -f -r ansible-galaxy-requirements.yaml
 RUN --mount=type=ssh ansible-playbook -v "takedalab.notebook_images.${PLAYBOOK}"
+
+# s6 - 01-copy-tmp-home
+RUN mkdir -p /tmp_home \
+ && cp -a ${HOME} /tmp_home
+COPY <<EOF /etc/cont-init.d/01-copy-tmp-home
+#!/usr/bin/with-contenv bash
+cp -a -n /tmp_home/* /home/
+EOF
+WORKDIR ${HOME}
 
 # Set entrypoint
 COPY docker/docker-entrypoint.sh /docker-entrypoint.sh
