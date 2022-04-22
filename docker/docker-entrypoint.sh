@@ -8,4 +8,8 @@ if ${ENABLE_SSH_SERVER}; then
   /usr/sbin/sshd
 fi
 
-/init gosu ${NB_USER} /docker-entrypoint-internal.sh "$@"
+if [[ $# -eq 0 ]]; then
+    /docker-entrypoint-internal.sh /init
+else
+    /docker-entrypoint-internal.sh /init gosu ${NB_USER} "$@"
+fi

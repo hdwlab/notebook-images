@@ -92,4 +92,3 @@ WORKDIR ${HOME}
 RUN echo 'exec "$@"' >> /docker-entrypoint-internal.sh
 COPY docker/docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["/bin/bash"]
