@@ -28,8 +28,4 @@ jobs:
           REF: ${{ github.ref }}
         shell: bash
         working-directory: docker
-        run: |
-          TAG=${REF##*/}
-          PUSH_IMAGE=true
-          ./build.sh
-
+        run: TAG=${REF##*/} PUSH_IMAGE=true ./build.sh
