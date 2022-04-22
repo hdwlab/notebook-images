@@ -12,5 +12,4 @@ ${PUSH_IMAGE:-false} && loadOrPush="--push" || loadOrPush="--load"
 
 set -x
 docker buildx bake ${loadOrPush} --progress=plain -f "$SCRIPT_DIR/docker-bake.hcl" \
-    --set "*.context=$WORKSPACE_ROOT" \
-    --set "*.ssh=default"
+    --set "*.context=$WORKSPACE_ROOT"
