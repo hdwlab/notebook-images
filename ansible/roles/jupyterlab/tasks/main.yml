@@ -1,0 +1,99 @@
+---
+- name: Install node.js
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    export DEBIAN_FRONTEND=noninteractive \
+     && curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" | apt-key add - \
+     && echo "deb https://deb.nodesource.com/node_14.x focal main" > /etc/apt/sources.list.d/nodesource.list \
+     && apt-get -yq update \
+     && apt-get -yq install --no-install-recommends \
+        nodejs \
+     && apt-get clean \
+     && rm -rf /var/lib/apt/lists/*
+  notify:
+    - JupyterLab installation is done
+
+- name: Setup env for conda
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    set -x
+    set -e
+    source /docker-entrypoint-internal.sh
+
+    CONDA_DIR="{{ CONDA_DIR }}"
+    echo "export CONDA_DIR=${CONDA_DIR}" >> /docker-entrypoint-internal.sh
+    mkdir -p ${CONDA_DIR} \
+     && echo ". ${CONDA_DIR}/etc/profile.d/conda.sh" >> ${HOME}/.bashrc \
+     && echo ". ${CONDA_DIR}/etc/profile.d/conda.sh" >> /etc/profile \
+     && echo "conda activate base" >> ${HOME}/.bashrc \
+     && echo "conda activate base" >> /etc/profile \
+     && chown -R ${NB_USER}:users ${CONDA_DIR} \
+     && chown -R ${NB_USER}:users ${HOME}
+
+- name: Install conda, pip, python
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    gosu ${NB_USER} bash <<'EOF'
+      set -x
+      set -e
+      source /docker-entrypoint-internal.sh
+
+      # Load variable
+      CONDA_DIR="{{ CONDA_DIR }}"
+      MINIFORGE_ARCH="{{ MINIFORGE_ARCH }}"
+      MINIFORGE_VERSION="{{ MINIFORGE_VERSION }}"
+      PIP_VERSION="{{ PIP_VERSION }}"
+      PYTHON_VERSION="{{ PYTHON_VERSION }}"
+
+      # Install conda
+      curl -sL "https://github.com/conda-forge/miniforge/releases/download/${MINIFORGE_VERSION}/Miniforge3-${MINIFORGE_VERSION}-Linux-${MINIFORGE_ARCH}.sh" -o /tmp/Miniforge3.sh
+      curl -sL "https://github.com/conda-forge/miniforge/releases/download/${MINIFORGE_VERSION}/Miniforge3-${MINIFORGE_VERSION}-Linux-${MINIFORGE_ARCH}.sh.sha256" -o /tmp/Miniforge3.sh.sha256
+      echo "$(cat /tmp/Miniforge3.sh.sha256 | awk '{ print $1; }') /tmp/Miniforge3.sh" | sha256sum --check
+      rm /tmp/Miniforge3.sh.sha256
+      /bin/bash /tmp/Miniforge3.sh -b -f -p ${CONDA_DIR}
+      rm /tmp/Miniforge3.sh
+      export PATH="${CONDA_DIR}/bin:${PATH}"
+      echo "export PATH=\"${CONDA_DIR}/bin:${PATH}\"" >> /docker-entrypoint-internal.sh
+
+      # Setup python environment
+      conda config --system --set auto_update_conda false
+      conda config --system --set show_channel_urls true
+      echo "conda ${MINIFORGE_VERSION:0:-2}" >> ${CONDA_DIR}/conda-meta/pinned
+      echo "python ${PYTHON_VERSION}" >> ${CONDA_DIR}/conda-meta/pinned
+      conda install -y -q python=${PYTHON_VERSION} conda=${MINIFORGE_VERSION:0:-2} pip=${PIP_VERSION}
+      conda update -y -q --all
+      conda clean -a -f -y
+      chown -R ${NB_USER}:users ${CONDA_DIR}
+      chown -R ${NB_USER}:users ${HOME}
+    EOF
+
+- name: Install JupyterLab
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    gosu ${NB_USER} bash <<'EOF'
+      set -x
+      set -e
+      source /docker-entrypoint-internal.sh
+    
+      # Load variable
+      JUPYTERLAB_VERSION="{{ JUPYTERLAB_VERSION }}"
+      NOTEBOOK_VERSION="{{ NOTEBOOK_VERSION }}"
+      IPYTHON_VERSION="{{ IPYTHON_VERSION }}"
+    
+      # Install JupyterLab
+      python3 -m pip install --quiet --no-cache-dir \
+        jupyterlab==${JUPYTERLAB_VERSION} \
+        notebook==${NOTEBOOK_VERSION} \
+        ipykernel==${IPYTHON_VERSION}
+      jupyter lab --generate-config
+      rm -rf ${HOME}/.cache/yarn
+    EOF
+

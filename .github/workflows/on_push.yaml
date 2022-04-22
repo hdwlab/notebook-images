@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
-      - develop
     tags:
       - v*
 
@@ -13,20 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 300
-    strategy:
-      max-parallel: 1
-      matrix:
-        command_prefix:
-          - ""
-          - root.
-        image:
-          - codeserver
-          - pycharm
-          - pycharm-cuda
-          - pycharm-with-ros
-          - katib-kfp-trial
-          - jupyterlab-with-autoware
-          - jupyterlab-with-ros2
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
@@ -40,106 +24,7 @@ jobs:
 
       - name: Build image
         env:
-          TAG: ${{ github.ref }}
-          IMAGE: ${{ matrix.image }}
-          COMMAND_PREFIX: ${{ matrix.command_prefix }}
+          REF: ${{ github.ref }}
         shell: bash
-        working-directory: ${{ matrix.image }}
-        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}build
-
-      - name: Push to GitHab registry
-        env:
-          TAG: ${{ github.ref }}
-          IMAGE: ${{ matrix.image }}
-          COMMAND_PREFIX: ${{ matrix.command_prefix }}
-        shell: bash
-        working-directory: ${{ matrix.image }}
-        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}publish
-
-  build-jupyterlab-with-kale:
-    runs-on: ubuntu-latest
-    timeout-minutes: 300
-    strategy:
-      max-parallel: 1
-      matrix:
-        command_prefix:
-          - ""
-          - root.
-        base_name:
-          - scipy
-          - pytorch
-          - pytorch-gpu
-          - tensorflow
-          - tensorflow-gpu
-    steps:
-      - name: Clone repo
-        uses: actions/checkout@v2
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build image
-        env:
-          TAG: ${{ github.ref }}
-          BASE_NAME: ${{ matrix.base_name }}
-          COMMAND_PREFIX: ${{ matrix.command_prefix }}
-        shell: bash
-        working-directory: jupyterlab-with-kale
-        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}build.${BASE_NAME}
-
-      - name: Push to GitHab registry
-        env:
-          TAG: ${{ github.ref }}
-          BASE_NAME: ${{ matrix.base_name }}
-          COMMAND_PREFIX: ${{ matrix.command_prefix }}
-        shell: bash
-        working-directory: jupyterlab-with-kale
-        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}publish.${BASE_NAME}
-
-  build-jupyterlab-with-elyra:
-    runs-on: ubuntu-latest
-    timeout-minutes: 300
-    strategy:
-      max-parallel: 1
-      matrix:
-        command_prefix:
-          - ""
-          - root.
-        base_name:
-          - scipy
-          - pytorch
-          - pytorch-gpu
-          - tensorflow
-          - tensorflow-gpu
-    steps:
-      - name: Clone repo
-        uses: actions/checkout@v2
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build image
-        env:
-          TAG: ${{ github.ref }}
-          BASE_NAME: ${{ matrix.base_name }}
-          COMMAND_PREFIX: ${{ matrix.command_prefix }}
-        shell: bash
-        working-directory: jupyterlab-with-elyra
-        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}build.${BASE_NAME}
-
-      - name: Push to GitHab registry
-        env:
-          TAG: ${{ github.ref }}
-          BASE_NAME: ${{ matrix.base_name }}
-          COMMAND_PREFIX: ${{ matrix.command_prefix }}
-        shell: bash
-        working-directory: jupyterlab-with-elyra
-        run: VERSION=${TAG##*/} make ${COMMAND_PREFIX}publish.${BASE_NAME}
+        working-directory: docker
+        run: TAG=${REF##*/} PUSH_IMAGE=true ./build.sh
