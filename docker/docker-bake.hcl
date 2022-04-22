@@ -1,5 +1,5 @@
 group "default" {
-  targets = ["base-cpu"]
+  targets = ["base-cpu", "base-cuda"]
 }
 
 variable "TAG" {
