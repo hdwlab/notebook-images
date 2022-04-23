@@ -1,5 +1,7 @@
 #syntax=docker/dockerfile:1.4
 
+FROM docker:latest as docker
+
 FROM base_image as devel
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -13,6 +15,9 @@ ENV SHELL /bin/bash
 # Args - software versions
 ARG S6_ARCH="amd64"
 ARG S6_VERSION=v2.2.0.3
+
+# Copy docker CLI
+COPY --from=docker /usr/local/bin/docker /usr/local/bin/
 
 # Install useful linux packages
 RUN export DEBIAN_FRONTEND=noninteractive \
