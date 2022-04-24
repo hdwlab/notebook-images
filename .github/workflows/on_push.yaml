@@ -13,6 +13,7 @@ jobs:
     timeout-minutes: 300
     strategy:
       max-parallel: 1
+      fail-fast: false
       matrix:
         base_image:
           - "ubuntu:20.04"

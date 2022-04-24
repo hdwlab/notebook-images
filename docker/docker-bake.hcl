@@ -35,4 +35,5 @@ target "common" {
   args = {
     PLAYBOOK = "${PLAYBOOK}"
   }
+  cache-from = ["${COMMON_IMAGE_NAME_WITH_TAG}"]
 }
