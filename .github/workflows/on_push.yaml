@@ -11,6 +11,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 300
+    strategy:
+      max-parallel: 1
+      matrix:
+        base_image:
+          - "ubuntu:20.04"
+          - "nvidia/cuda:11.6.2-cudnn8-runtime-ubuntu20.04"
+        playbook:
+          - jupyterlab
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
@@ -24,7 +32,14 @@ jobs:
 
       - name: Build image
         env:
+          PLAYBOOK: ${{ matrix.playbook }}
+          BASE_IMAGE: ${{ matrix.base_image }}
           REF: ${{ github.ref }}
         shell: bash
         working-directory: docker
-        run: TAG=${REF##*/} PUSH_IMAGE=true ./build.sh
+        run: |
+          export BASE_IMAGE=${BASE_IMAGE}
+          export IMAGE_TAG=${REF##*/} 
+          export PLAYBOOK=${PLAYBOOK}
+          export PUSH_IMAGE=true 
+          ./build.sh

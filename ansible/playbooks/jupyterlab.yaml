@@ -1,0 +1,7 @@
+- name: Import base
+  import_playbook: base.yaml
+
+- hosts: localhost
+  connection: local
+  roles:
+    - role: takedalab.notebook_images.jupyterlab

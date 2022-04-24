@@ -1,39 +1,38 @@
 group "default" {
-  targets = ["base-cpu", "base-cuda"]
+  targets = ["common"]
 }
 
-variable "TAG" {
+variable "BASE_IMAGE" {
+  default = "ubuntu:20.04"
+#  default = "nvidia/cuda:11.6.2-cudnn8-runtime-ubuntu20.04"
+}
+
+variable "IMAGE_NAME" {
+  default = "ghcr.io/takedalab/notebook-images"
+}
+
+variable "IMAGE_TAG" {
   default = "latest"
 }
 
-variable "UBUNTU_VERSION" {
-  default = "20.04"
+variable "PLAYBOOK" {
+  default = "base"
 }
 
-variable "CUDA_VERSION" {
-  default = "11.6.2"
+function "base_image_to_output_image_postfix" {
+  params = [base_image]
+  result = join("-", split(":", join("-", split("/", base_image))))
 }
 
-variable "CUDNN_VERSION" {
-  default = "8"
-}
+COMMON_IMAGE_NAME_WITH_TAG="${IMAGE_NAME}:${IMAGE_TAG}-${PLAYBOOK}-${base_image_to_output_image_postfix(BASE_IMAGE)}"
 
-target "base" {
+target "common" {
   dockerfile = "docker/Dockerfile"
-}
-
-target "base-cpu" {
-  inherits = ["base"]
-  tags = ["ghcr.io/takedalab/notebook-base:${TAG}-ubuntu-${UBUNTU_VERSION}-cpu"]
+  tags = ["${COMMON_IMAGE_NAME_WITH_TAG}"]
   contexts = {
-    base_image = "docker-image://ubuntu:${UBUNTU_VERSION}"
+    base_image = "docker-image://${BASE_IMAGE}"
   }
-}
-
-target "base-cuda" {
-  inherits = ["base"]
-  tags = ["ghcr.io/takedalab/notebook-base:${TAG}-ubuntu-${UBUNTU_VERSION}-cuda-${CUDA_VERSION}"]
-  contexts = {
-    base_image = "docker-image://nvidia/cuda:${CUDA_VERSION}-cudnn${CUDNN_VERSION}-runtime-ubuntu${UBUNTU_VERSION}"
+  args = {
+    PLAYBOOK = "${PLAYBOOK}"
   }
 }
