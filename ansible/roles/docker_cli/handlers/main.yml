@@ -1,0 +1,24 @@
+---
+- name: Enable docker-cli
+  listen: Docker-cli installation is done
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    [[ ! -d /etc/cont-init.d ]] && mkdir -p /etc/cont-init.d
+    
+    cat <<'EOF' > /etc/cont-init.d/add-user-to-docker-group
+    #!/usr/bin/with-contenv bash
+    DOCKER_SOCKET=/var/run/docker.sock
+    if [[ -S ${DOCKER_SOCKET} ]]; then
+        DOCKER_GID=$(stat -c '%g' ${DOCKER_SOCKET})
+        DOCKER_GROUP=$(getent group ${DOCKER_GID} | awk -F ":" '{ print $1 }' || echo "")
+        if [[ ${DOCKER_GROUP} ]]; then
+            addgroup ${NB_USER} ${DOCKER_GROUP}
+        else
+            addgroup --system --gid ${DOCKER_GID} docker
+            usermod -aG docker ${NB_USER}
+        fi
+    fi
+    
+    EOF

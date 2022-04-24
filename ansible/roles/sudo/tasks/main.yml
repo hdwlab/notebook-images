@@ -1,0 +1,9 @@
+---
+- name: Install sudo
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+    name:
+      - sudo
+  notify:
+    - sudo installation is done

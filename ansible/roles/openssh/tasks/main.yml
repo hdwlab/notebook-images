@@ -5,6 +5,8 @@
     update_cache: yes
     name:
       - openssh-server
+  notify:
+    - OpenSSH installation is done
 - name: Configure sshd_config
   become: true
   args:

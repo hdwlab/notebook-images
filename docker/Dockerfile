@@ -1,7 +1,4 @@
 #syntax=docker/dockerfile:1.4
-
-FROM docker:latest as docker
-
 FROM base_image as devel
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -15,9 +12,6 @@ ENV SHELL /bin/bash
 # Args - software versions
 ARG S6_ARCH="amd64"
 ARG S6_VERSION=v2.2.0.3
-
-# Copy docker CLI
-COPY --from=docker /usr/local/bin/docker /usr/local/bin/
 
 # Install useful linux packages
 RUN export DEBIAN_FRONTEND=noninteractive \
@@ -81,8 +75,10 @@ COPY <<EOF /docker-entrypoint-internal.sh
 #!/usr/bin/env bash
 EOF
 RUN chmod 777 /docker-entrypoint-internal.sh \
-  && ansible-galaxy collection install -f -r ansible-galaxy-requirements.yaml
-RUN --mount=type=ssh ansible-playbook -vvv "takedalab.notebook_images.${PLAYBOOK}"
+ && ansible-galaxy collection install -f -r ansible-galaxy-requirements.yaml
+RUN --mount=type=ssh ansible-playbook -vvv "takedalab.notebook_images.${PLAYBOOK}" \
+ && apt clean \
+ && rm -rf /var/lib/apt/lists/*
 
 # s6 - 01-copy-tmp-home
 RUN mkdir -p /tmp_home \
