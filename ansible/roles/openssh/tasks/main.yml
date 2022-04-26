@@ -58,6 +58,7 @@
 
     AllowAgentForwarding yes
     AllowTcpForwarding yes
+    GatewayPorts yes
     X11Forwarding yes
     PrintMotd no
 
@@ -66,5 +67,8 @@
     AcceptEnv LANG LC_*
 
     Subsystem       sftp    /usr/lib/openssh/sftp-server
+    
+    Match Host 127.0.0.1
+        PermitRootLogin yes
 
     EOF
