@@ -90,9 +90,9 @@
     
       # Install JupyterLab
       python3 -m pip install --quiet --no-cache-dir \
-        jupyterlab==${JUPYTERLAB_VERSION} \
-        notebook==${NOTEBOOK_VERSION} \
-        ipykernel==${IPYTHON_VERSION}
+        jupyterlab${JUPYTERLAB_VERSION} \
+        notebook${NOTEBOOK_VERSION} \
+        ipykernel${IPYTHON_VERSION}
       jupyter lab --generate-config
       rm -rf ${HOME}/.cache/yarn
     EOF
