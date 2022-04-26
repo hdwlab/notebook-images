@@ -6,8 +6,14 @@
     name:
       - bzip2
       - curl
+      - dnsutils
       - git
+      - htop
+      - iftop
+      - iputils-ping
+      - less
       - nano
+      - nmon
       - openssh-client
       - tmux
       - unzip

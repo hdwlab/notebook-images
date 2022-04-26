@@ -4,4 +4,5 @@
 - hosts: localhost
   connection: local
   roles:
+    - role: takedalab.notebook_images.ml_tools
     - role: takedalab.notebook_images.jupyterlab
