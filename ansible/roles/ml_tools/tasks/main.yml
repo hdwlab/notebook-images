@@ -5,5 +5,3 @@
     update_cache: yes
     name:
       - libgl1-mesa-dev
-  notify:
-    - ML-tools installation is done
