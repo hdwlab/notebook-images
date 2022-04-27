@@ -7,6 +7,8 @@
       - bzip2
       - curl
       - dnsutils
+      - gcc
+      - g++
       - git
       - htop
       - iftop
@@ -16,6 +18,7 @@
       - nmon
       - openssh-client
       - tmux
+      - tree
       - unzip
       - vim
       - wget
