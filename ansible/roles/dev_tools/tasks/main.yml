@@ -13,7 +13,9 @@
       - htop
       - iftop
       - iputils-ping
+      - jq
       - less
+      - make
       - nano
       - nmon
       - openssh-client
