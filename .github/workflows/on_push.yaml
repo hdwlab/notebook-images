@@ -17,7 +17,7 @@ jobs:
       matrix:
         base_image:
           - "ubuntu:20.04"
-          - "nvidia/cuda:11.6.2-cudnn8-devel-ubuntu20.04"
+          - "nvidia/cuda:11.1-cudnn8-devel-ubuntu20.04"
         playbook:
           - jupyterlab
     steps:
