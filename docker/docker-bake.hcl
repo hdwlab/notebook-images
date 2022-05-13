@@ -4,7 +4,7 @@ group "default" {
 
 variable "BASE_IMAGE" {
   default = "ubuntu:20.04"
-#  default = "nvidia/cuda:11.6.2-cudnn8-runtime-ubuntu20.04"
+#  default = "nvidia/cuda:11.6.2-cudnn8-devel-ubuntu20.04"
 }
 
 variable "IMAGE_NAME" {
