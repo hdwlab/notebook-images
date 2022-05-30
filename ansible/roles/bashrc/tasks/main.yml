@@ -1,0 +1,13 @@
+---
+- name: Prepare .bashrc
+  become: false
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    cat <<'EOF' >> ${HOME}/.bash_profile
+    if [ -f ~/.bashrc ]; then
+      . ${HOME}/.bashrc
+    fi
+    EOF
+    
+    echo "" >> ${HOME}/.bashrc

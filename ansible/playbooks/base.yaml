@@ -1,8 +1,10 @@
 - hosts: localhost
   connection: local
   roles:
+    - role: takedalab.notebook_images.bashrc
     - role: takedalab.notebook_images.bind_gid
     - role: takedalab.notebook_images.bind_groups
+    - role: takedalab.notebook_images.cuda_path
     - role: takedalab.notebook_images.dev_tools
     - role: takedalab.notebook_images.docker_cli
     - role: takedalab.notebook_images.sudo

@@ -22,3 +22,7 @@
     fi
     
     EOF
+    
+    cat <<'EOF' >> ${HOME}/.bashrc
+    [[ ! -S ${DOCKER_SOCKET:-/var/run/docker.sock} ]] && export DOCKER_HOST="127.0.0.1:2375"
+    EOF
