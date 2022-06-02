@@ -18,6 +18,7 @@
       - make
       - nano
       - nmon
+      - moreutils
       - openssh-client
       - tmux
       - tree
