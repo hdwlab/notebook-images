@@ -1,0 +1,4 @@
+# kubectl
+
+Install kubectl command.
+

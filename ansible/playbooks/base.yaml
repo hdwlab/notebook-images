@@ -7,5 +7,6 @@
     - role: takedalab.notebook_images.cuda_path
     - role: takedalab.notebook_images.dev_tools
     - role: takedalab.notebook_images.docker_cli
+    - role: takedalab.notebook_images.kubectl
     - role: takedalab.notebook_images.sudo
     - role: takedalab.notebook_images.openssh
