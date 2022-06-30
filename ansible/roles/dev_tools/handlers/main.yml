@@ -8,3 +8,11 @@
     mkdir -p ${HOME}/.ssh \
     && ssh-keyscan github.com >> ${HOME}/.ssh/known_hosts
     EOF
+- name: Enable bash-completion
+  listen: dev-tools installation is done
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    gosu ${NB_USER} bash <<EOF
+    echo 'source /usr/share/bash-completion/bash_completion' >> ~/.bashrc
+    EOF
