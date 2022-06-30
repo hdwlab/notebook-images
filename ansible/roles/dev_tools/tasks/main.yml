@@ -20,6 +20,7 @@
       - nmon
       - moreutils
       - openssh-client
+      - rsync
       - tmux
       - tree
       - unzip
