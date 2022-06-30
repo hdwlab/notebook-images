@@ -13,3 +13,19 @@
     /usr/sbin/sshd
     
     EOF
+- name: Support loading notebook's environmen variables
+  listen: Supported exporting notebook's environment variables
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    gosu ${NB_USER} bash <<EOF
+
+    # Get environment variables from another process
+    echo 'set -a; sudo -v > /dev/null 2> /dev/null && eval \$(sudo xargs -0 -L1 -a /proc/1/environ); set +a' | cat - ~/.bash_profile > /tmp/bash_profile.tmp
+    mv /tmp/bash_profile.tmp ~/.bash_profile
+
+    # Setting static environment variables
+    echo 'set -a; source /opt/notebook.env; set +a' | cat - ~/.bash_profile > /tmp/bash_profile.tmp
+    mv /tmp/bash_profile.tmp ~/.bash_profile
+
+    EOF
