@@ -8,7 +8,7 @@
     set -x
     
     apt update
-    apt install ca-certificates curl gnupg lsb-release
+    apt install -y ca-certificates curl gnupg lsb-release
     curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
     | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
     echo \
