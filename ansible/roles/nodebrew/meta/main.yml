@@ -1,6 +1,6 @@
 galaxy_info:
   author: Daiki Hayashi
-  description: Insert CUDA-related paths into .bashrc
+  description: Install nodebrew.
   company: Human Dataware Lab. Co., Ltd.
   license: Apache-2.0
   min_ansible_version: "2.1"
@@ -9,4 +9,6 @@ galaxy_info:
     versions:
       - focal
   galaxy_tags: []
-dependencies: []
+dependencies: 
+  - role: bashrc
+  - role: dev_tools
