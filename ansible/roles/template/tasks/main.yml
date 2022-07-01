@@ -1,0 +1,29 @@
+---
+- name: Execute shell commands as root user
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    # Write commands that you want to execute during building the container image.
+    # Commands here are executed as root user.
+    
+    # For example, the following command configures login messages
+    echo 'Welcome $(whoami)' >> /etc/motd
+
+    # The following command configures environment variables
+    echo 'ABC=DEF' >> /etc/environment
+
+- name: Execute shell commands as notebook user
+  become: false
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    gosu ${NB_USER} bash <<'EOS'
+
+    # Write commands that you want to execute during building the container image.
+    # Commands here are executed as notebook's user (jovyan by default) instead of root user.
+
+    # For example, the following command creates ~/.config directory as notebook's user
+    mkdir ~/.config
+
+    EOS
