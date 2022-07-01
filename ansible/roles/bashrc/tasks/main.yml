@@ -4,6 +4,7 @@
   args:
     executable: /bin/bash
   ansible.builtin.shell: |
+    gosu ${NB_USER} bash <<EOS
     cat <<'EOF' >> ${HOME}/.bash_profile
     if [ -f ~/.bashrc ]; then
       . ${HOME}/.bashrc
@@ -11,3 +12,4 @@
     EOF
     
     echo "" >> ${HOME}/.bashrc
+    EOS

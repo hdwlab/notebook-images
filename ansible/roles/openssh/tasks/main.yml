@@ -72,3 +72,16 @@
         PermitRootLogin yes
 
     EOF
+- name: Support exporting notebook's environment variables
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    [[ ! -d /etc/cont-init.d ]] && mkdir -p /etc/cont-init.d
+
+    cat <<'EOF' > /etc/cont-init.d/support-exporting-env-vars
+    #!/usr/bin/with-contenv bash
+    env > /opt/notebook.env
+    EOF
+  notify:
+    - Supported exporting notebook's environment variables

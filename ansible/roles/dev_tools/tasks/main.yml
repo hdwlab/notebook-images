@@ -4,6 +4,7 @@
   ansible.builtin.apt:
     update_cache: yes
     name:
+      - bash-completion
       - bzip2
       - curl
       - dnsutils
