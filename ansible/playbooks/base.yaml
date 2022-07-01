@@ -12,3 +12,6 @@
     - role: takedalab.notebook_images.kubectl
     - role: takedalab.notebook_images.python
     - role: takedalab.notebook_images.kubeflow_pipeline
+    - role: takedalab.notebook_images.pyenv
+    - role: takedalab.notebook_images.poetry
+    - role: takedalab.notebook_images.nodebrew

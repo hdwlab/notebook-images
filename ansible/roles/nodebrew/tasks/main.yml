@@ -1,0 +1,14 @@
+---
+# Reference: https://github.com/hokaccha/nodebrew
+- name: Install nodebrew
+  become: false
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    gosu ${NB_USER} bash <<'EOS'
+
+    curl -L git.io/nodebrew | perl - setup
+
+    echo 'command -v nodebrew >/dev/null || export PATH="${HOME}/.nodebrew/current/bin:${PATH}"' >> ~/.bashrc
+
+    EOS
