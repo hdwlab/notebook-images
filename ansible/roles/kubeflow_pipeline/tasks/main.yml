@@ -1,0 +1,6 @@
+---
+- name: Install kfp
+  become: true
+  ansible.builtin.pip:
+    name:
+      - "kfp{{KFP_VERSION}}"

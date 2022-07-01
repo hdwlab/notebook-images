@@ -1,6 +1,6 @@
 galaxy_info:
   author: Daiki Hayashi
-  description: Install kubectl command.
+  description: Install Python.
   company: Human Dataware Lab. Co., Ltd.
   license: Apache-2.0
   min_ansible_version: "2.1"
@@ -9,5 +9,4 @@ galaxy_info:
     versions:
       - focal
   galaxy_tags: []
-dependencies:
-  - role: sudo
+dependencies: []
