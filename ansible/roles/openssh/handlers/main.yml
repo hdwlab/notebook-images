@@ -21,7 +21,7 @@
     gosu ${NB_USER} bash <<EOF
 
     # Get environment variables from another process
-    echo 'set -a; sudo -v > /dev/null 2> /dev/null && eval \$(sudo xargs -0 -L1 -a /proc/1/environ | sed -e \'s/=/="/;s/$/"/\'); set +a' | cat - ~/.bash_profile > /tmp/bash_profile.tmp
+    echo 'set -a; sudo -v > /dev/null 2> /dev/null && eval \$(sudo xargs -0 -L1 -a /proc/1/environ | sed -e "s/=/=\"/;s/$/\"/"); set +a' | cat - ~/.bash_profile > /tmp/bash_profile.tmp
     mv /tmp/bash_profile.tmp ~/.bash_profile
 
     # Setting static environment variables
