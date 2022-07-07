@@ -81,7 +81,7 @@
 
     cat <<'EOF' > /etc/cont-init.d/support-exporting-env-vars
     #!/usr/bin/with-contenv bash
-    env > /opt/notebook.env
+    env | sed -e 's/=/="/;s/$/"/' > /opt/notebook.env
     EOF
   notify:
     - Supported exporting notebook's environment variables
