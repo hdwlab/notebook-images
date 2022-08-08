@@ -19,6 +19,10 @@
     executable: /bin/bash
   ansible.builtin.shell: |
     gosu ${NB_USER} bash <<EOF
+    
+    # Get environment variables from another process
+    echo 'set -a; sudo -v > /dev/null 2> /dev/null && eval \$(sudo xargs -0 -L1 -a /proc/1/environ | sed -e "s/=/=\"/;s/$/\"/" | grep -v HOME | grep -v PATH); set +a' | cat - ~/.bash_profile > /tmp/bash_profile.tmp
+    mv /tmp/bash_profile.tmp ~/.bash_profile
 
     # Setting static environment variables
     echo 'set -a; source /opt/notebook.env; set +a' | cat - ~/.bash_profile > /tmp/bash_profile.tmp
