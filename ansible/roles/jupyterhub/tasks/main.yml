@@ -35,5 +35,3 @@
       jupyterlab${JUPYTERLAB_VERSION} \
       notebook${NOTEBOOK_VERSION} \
       ipykernel${IPYTHON_VERSION}
-  notify:
-    - JupyterHub installation is done
