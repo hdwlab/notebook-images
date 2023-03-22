@@ -35,7 +35,5 @@
       jupyterlab${JUPYTERLAB_VERSION} \
       notebook${NOTEBOOK_VERSION} \
       ipykernel${IPYTHON_VERSION}
-    jupyter lab --generate-config
-    rm -rf ${HOME}/.cache/yarn
   notify:
     - JupyterHub installation is done
