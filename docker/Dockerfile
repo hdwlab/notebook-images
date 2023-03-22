@@ -78,7 +78,8 @@ RUN chmod 777 /docker-entrypoint-internal.sh \
  && ansible-galaxy collection install -f -r ansible-galaxy-requirements.yaml
 RUN --mount=type=ssh ansible-playbook -vvv "hdwlab.notebook_images.${PLAYBOOK}" \
  && apt clean \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \
+ && rm -rf ${HOME}/.ansible
 
 # s6 - 01-copy-tmp-home
 RUN mkdir -p /tmp_home \
