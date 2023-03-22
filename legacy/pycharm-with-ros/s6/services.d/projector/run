@@ -1,3 +1,0 @@
-#!/usr/bin/with-contenv bash
-source /ros_entrypoint.sh
-projector run
