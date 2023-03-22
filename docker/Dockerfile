@@ -76,7 +76,7 @@ COPY <<EOF /docker-entrypoint-internal.sh
 EOF
 RUN chmod 777 /docker-entrypoint-internal.sh \
  && ansible-galaxy collection install -f -r ansible-galaxy-requirements.yaml
-RUN --mount=type=ssh ansible-playbook -vvv "takedalab.notebook_images.${PLAYBOOK}" \
+RUN --mount=type=ssh ansible-playbook -vvv "hdwlab.notebook_images.${PLAYBOOK}" \
  && apt clean \
  && rm -rf /var/lib/apt/lists/*
 

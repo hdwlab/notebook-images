@@ -1,0 +1,20 @@
+---
+- name: Enable service JupyterHub
+  listen: JupyterHub installation is done
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    [[ ! -d /etc/services.d ]] && mkdir -p /etc/services.d
+    mkdir -p /etc/services.d/jupyterhub
+
+    cat <<'EOF' > /etc/services.d/jupyterhub/run
+    #!/usr/bin/with-contenv bash
+
+    cd "${HOME}"
+    CONDA_DIR="{{ CONDA_DIR }}"
+    gosu ${NB_USER} exec jupyterhub \
+      --ip=0.0.0.0 \
+      --port=8888 \
+      --ServerApp.allow_origin="*"
+
+    EOF

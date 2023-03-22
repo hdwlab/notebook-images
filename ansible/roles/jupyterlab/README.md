@@ -1,4 +1,0 @@
-# Jupyterlab
-
-Install JupyterLab.
-

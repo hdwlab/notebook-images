@@ -4,11 +4,10 @@ group "default" {
 
 variable "BASE_IMAGE" {
   default = "ubuntu:20.04"
-#  default = "nvidia/cuda:11.6.2-cudnn8-devel-ubuntu20.04"
 }
 
 variable "IMAGE_NAME" {
-  default = "ghcr.io/takedalab/notebook-images"
+  default = "ghcr.io/hdwlab/notebook-images"
 }
 
 variable "IMAGE_TAG" {

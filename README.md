@@ -3,8 +3,8 @@
 This repository contains notebook images for KubeFlow.
 
 Available distributions are as follows:
- - `ghcr.io/takedalab/notebook-images:<version>-jupyterlab-ubuntu-20.04`: CPU only
- - `ghcr.io/takedalab/notebook-images:<version>-jupyterlab-nvidia-cuda-11.1.1-cudnn8-devel-ubuntu20.04`: GPU supported
+ - `ghcr.io/hdwlab/notebook-images:<version>-jupyterhub-ubuntu-20.04`
+ - `ghcr.io/hdwlab/notebook-images:<version>-jupyterhub-ubuntu-22.04`
 
 
 ## How to build images?
@@ -15,7 +15,7 @@ You can build container images as follows:
 cd docker
 export BASE_IMAGE=<Specify base image (e.g., ubuntu:20.04)>
 export IMAGE_TAG=<Specify image tag (default: latest)>
-export PLAYBOOK=<"base" or "jupyterlab">
+export PLAYBOOK=<"base" or "jupyterlab" or "jupyterhub">
 export PUSH_IMAGE=false
 ./build.sh
 
@@ -51,7 +51,7 @@ Save the following contents as `playbook/my_playbook.yaml`.
 - hosts: localhost
   connection: local
   roles:
-    - role: takedalab.notebook_images.my_role
+    - role: hdwlab.notebook_images.my_role
 
 ```
 

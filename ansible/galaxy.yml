@@ -1,17 +1,17 @@
-namespace: takedalab
+namespace: hdwlab
 name: notebook_images
 version: 0.1.0
 readme: README.md
 authors:
-- Daiki Hayashi <hayashi.daiki@g.sp.m.is.nagoya-u.ac.jp>
-description: A collection for notebook images in Takeda Laboratory.
+- Daiki Hayashi <daiki.hayashi@hdwlab.co.jp>
+description: A collection for notebook images in Human Dataware Lab.
 license:
 - Apache-2.0
 tags: []
 dependencies: {}
-repository: https://github.com/TakedaLab/notebook-images
-documentation: https://github.com/TakedaLab/notebook-images
-homepage: https://github.com/TakedaLab/notebook-images
-issues: https://github.com/TakedaLab/notebook-images
+repository: https://github.com/hdwlab/notebook-images
+documentation: https://github.com/hdwlab/notebook-images
+homepage: https://github.com/hdwlab/notebook-images
+issues: https://github.com/hdwlab/notebook-images
 build_ignore: []
 

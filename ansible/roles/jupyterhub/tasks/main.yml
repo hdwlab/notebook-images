@@ -1,0 +1,41 @@
+---
+- name: Install node.js
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    export DEBIAN_FRONTEND=noninteractive \
+     && curl -sL "https://deb.nodesource.com/gpgkey/nodesource.gpg.key" | apt-key add - \
+     && echo "deb https://deb.nodesource.com/node_16.x focal main" > /etc/apt/sources.list.d/nodesource.list \
+     && apt-get -yq update \
+     && apt-get -yq install --no-install-recommends \
+        nodejs \
+     && apt-get clean \
+     && rm -rf /var/lib/apt/lists/*
+
+- name: Install JupyterHub
+  become: true
+  args:
+    executable: /bin/bash
+  ansible.builtin.shell: |
+    set -x
+    set -e
+    source /docker-entrypoint-internal.sh
+
+    # Load variable
+    JUPYTERHUB_VERSION="{{ JUPYTERHUB_VERSION }}"
+    JUPYTERLAB_VERSION="{{ JUPYTERLAB_VERSION }}"
+    NOTEBOOK_VERSION="{{ NOTEBOOK_VERSION }}"
+    IPYTHON_VERSION="{{ IPYTHON_VERSION }}"
+
+    # Install JupyterLab
+    npm install -g configurable-http-proxy
+    python3 -m pip install --quiet --no-cache-dir \
+      jupyterhub${JUPYTERHUB_VERSION} \
+      jupyterlab${JUPYTERLAB_VERSION} \
+      notebook${NOTEBOOK_VERSION} \
+      ipykernel${IPYTHON_VERSION}
+    jupyter lab --generate-config
+    rm -rf ${HOME}/.cache/yarn
+  notify:
+    - JupyterHub installation is done
