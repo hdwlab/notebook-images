@@ -54,7 +54,7 @@ jobs:
       fail-fast: false
       matrix:
         base_image:
-          - "ghcr.io/autowarefoundation/autoware-universe:humble-20230801"
+          - "ghcr.io/autowarefoundation/autoware-universe:humble-20230801-prebuilt"
         playbook:
           - jupyterhub_autoware
     steps:
