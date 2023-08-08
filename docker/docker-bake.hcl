@@ -20,7 +20,7 @@ variable "PLAYBOOK" {
 
 function "base_image_to_output_image_postfix" {
   params = [base_image]
-  result = join("-", split(":", join("-", split("/", base_image))))
+  result = join("-", split(":", split("/", base_image)[length(split("/", base_image)) - 1]))
 }
 
 COMMON_IMAGE_NAME_WITH_TAG="${IMAGE_NAME}:${IMAGE_TAG}-${PLAYBOOK}-${base_image_to_output_image_postfix(BASE_IMAGE)}"
