@@ -1,0 +1,7 @@
+- name: Import base
+  import_playbook: jupyterhub.yaml
+
+- hosts: localhost
+  connection: local
+  roles:
+    - role: hdwlab.notebook_images.mcap

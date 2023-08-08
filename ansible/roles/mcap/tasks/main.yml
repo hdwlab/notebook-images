@@ -1,0 +1,8 @@
+---
+- name: Install MCAP
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+    name:
+      - ros-humble-mcap-vendor
+      - ros-humble-rosbag2-storage-mcap

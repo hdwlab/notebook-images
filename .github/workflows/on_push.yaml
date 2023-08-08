@@ -19,9 +19,44 @@ jobs:
         base_image:
           - "ubuntu:20.04"
           - "ubuntu:22.04"
-          - "ros:humble"
         playbook:
           - jupyterhub
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v2
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build image
+        env:
+          PLAYBOOK: ${{ matrix.playbook }}
+          BASE_IMAGE: ${{ matrix.base_image }}
+          REF: ${{ github.ref }}
+        shell: bash
+        working-directory: docker
+        run: |
+          export BASE_IMAGE=${BASE_IMAGE}
+          export IMAGE_TAG=${REF##*/} 
+          export PLAYBOOK=${PLAYBOOK}
+          export PUSH_IMAGE=true 
+          ./build.sh
+
+  build-autoware:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    strategy:
+      max-parallel: 1
+      fail-fast: false
+      matrix:
+        base_image:
+          - "ghcr.io/autowarefoundation/autoware-universe:humble-20230801"
+        playbook:
+          - jupyterhub-autoware
     steps:
       - name: Clone repo
         uses: actions/checkout@v2
